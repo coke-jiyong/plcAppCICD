@@ -1,0 +1,99 @@
+# image: jypark0209/plc-build:latest
+
+before_script:
+  - echo "This is OTACauth for PLC build container."
+  - export PATH=$PATH:/home/plcncli
+  - mkdir -p $CI_PROJECT_DIR/artifacts
+
+
+stages:
+  - build
+  - test
+  - security
+
+
+variables:
+  SAST_DISABLED: "false"
+
+# .build_job_template: &build_job_template
+#   script:
+#     - echo "----------${TARGET} .so file build start----------"
+#     - cd /home/otacauthServer/${TARGET_LOW}/work
+#     - plcncli new project -n OTACauth
+#     - cd OTACauth
+#     - rm -rf src/*
+#     - cp -r $CI_PROJECT_DIR/* .
+#     - plcncli set target --add -n ${TARGET}
+#     - plcncli build
+#     - cd /home/otacauthServer/${TARGET_LOW}/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
+#     - mv libOTACauth.so libOTACauth-${TARGET_LOW}.so
+#     - cp libOTACauth-${TARGET_LOW}.so $CI_PROJECT_DIR/artifacts/
+#   artifacts:
+#     expire_in: 1 day
+#     paths:
+#     - artifacts/
+
+# build-epc1502:
+#   <<: *build_job_template
+#   stage: build
+#   variables:
+#     TARGET: EPC1502
+#     VERSION: 6.62
+#     TARGET_LOW: epc1502
+
+# build-epc1522:
+#   <<: *build_job_template
+#   stage: build
+#   variables:
+#     TARGET: EPC1522
+#     VERSION: 6.54
+#     TARGET_LOW: epc1522
+
+# build-axcf3152:
+#   <<: *build_job_template
+#   stage: build
+#   variables:
+#     TARGET: AXCF3152
+#     VERSION: 2.56
+#     TARGET_LOW: axcf3152
+
+# check_build:
+#   stage: test
+#   script:
+#     - ls -al artifacts/
+
+
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+
+sast:
+  stage: security
+  allow_failure: true
+
+# override the dependency scanning job
+# gemnasium-dependency_scanning:
+#   tags: [ saas-linux-large-amd64 ]
+#   rules:
+#     - if: $CI_COMMIT_BRANCH == "main"
+#     - if: $CI_MERGE_REQUEST_IID
+
+
+
+export-merged-sbom:
+  before_script:
+    - apt update
+    - apt install -y  jq curl dos2unix
+  stage: .post
+  script:
+    - |
+      curl --header "Authorization: Bearer $PRIVATE_TOKEN" --output export.sh --url "https://gitlab.com/api/v4/snippets/3730445/raw"
+    - dos2unix export.sh
+    - bash export.sh
+  artifacts:
+    paths:
+      - "gl-sbom-merged-*.cdx.json"
+
+
+
