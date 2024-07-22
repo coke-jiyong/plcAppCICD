@@ -66,12 +66,12 @@ variables:
 
 
 include:
-  - template: Security/SAST.gitlab-ci.yml
-  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml #코드 취약점 점검
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml #sbom 생성 (lock파일 필요)
 
-sast:
-  stage: security
-  allow_failure: true
+# sast:
+#   stage: security
+#   allow_failure: true
 
 # override the dependency scanning job
 # gemnasium-dependency_scanning:
