@@ -1,4 +1,5 @@
 # image: jypark0209/plc-build:latest
+image: ubuntu:20.04
 
 before_script:
   - echo "This is OTACauth for PLC build container."
@@ -83,8 +84,8 @@ sast:
 
 export-merged-sbom:
   before_script:
-    - apt update
-    - apt install -y  jq curl dos2unix
+    - apt-get update
+    - apt-get install -y  jq curl dos2unix
   stage: .post
   script:
     - |
