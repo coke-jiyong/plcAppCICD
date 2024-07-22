@@ -86,6 +86,7 @@ export-merged-sbom:
   before_script:
     - apt-get update
     - apt-get install -y  jq curl dos2unix
+    - echo "$PRIVATE_TOKEN"
   stage: .post
   script:
     - |
