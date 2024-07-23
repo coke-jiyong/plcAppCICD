@@ -13,55 +13,55 @@ stages:
   - spdx
 
 
-.build_job_template: &build_job_template
-  script:
-    - echo "----------${TARGET} .so file build start----------"
-    - cd /home/otacauthServer/${TARGET_LOW}/work
-    - plcncli new project -n OTACauth
-    - cd OTACauth
-    - rm -rf src/*
-    - cp -r $CI_PROJECT_DIR/* .
-    - plcncli set target --add -n ${TARGET}
-    - plcncli build
-    - cd /home/otacauthServer/${TARGET_LOW}/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
-    - mv libOTACauth.so libOTACauth-${TARGET_LOW}.so
-    - cp libOTACauth-${TARGET_LOW}.so $CI_PROJECT_DIR/artifacts/
-  artifacts:
-    expire_in: 1 day
-    paths:
-    - artifacts/
+# .build_job_template: &build_job_template
+#   script:
+#     - echo "----------${TARGET} .so file build start----------"
+#     - cd /home/otacauthServer/${TARGET_LOW}/work
+#     - plcncli new project -n OTACauth
+#     - cd OTACauth
+#     - rm -rf src/*
+#     - cp -r $CI_PROJECT_DIR/* .
+#     - plcncli set target --add -n ${TARGET}
+#     - plcncli build
+#     - cd /home/otacauthServer/${TARGET_LOW}/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
+#     - mv libOTACauth.so libOTACauth-${TARGET_LOW}.so
+#     - cp libOTACauth-${TARGET_LOW}.so $CI_PROJECT_DIR/artifacts/
+#   artifacts:
+#     expire_in: 1 day
+#     paths:
+#     - artifacts/
 
-build-epc1502:
-  <<: *build_job_template
-  stage: build
-  variables:
-    TARGET: EPC1502
-    VERSION: 6.62
-    TARGET_LOW: epc1502
+# build-epc1502:
+#   <<: *build_job_template
+#   stage: build
+#   variables:
+#     TARGET: EPC1502
+#     VERSION: 6.62
+#     TARGET_LOW: epc1502
 
-build-epc1522:
-  <<: *build_job_template
-  stage: build
-  variables:
-    TARGET: EPC1522
-    VERSION: 6.54
-    TARGET_LOW: epc1522
+# build-epc1522:
+#   <<: *build_job_template
+#   stage: build
+#   variables:
+#     TARGET: EPC1522
+#     VERSION: 6.54
+#     TARGET_LOW: epc1522
 
-build-axcf3152:
-  <<: *build_job_template
-  stage: build
-  variables:
-    TARGET: AXCF3152
-    VERSION: 2.56
-    TARGET_LOW: axcf3152
+# build-axcf3152:
+#   <<: *build_job_template
+#   stage: build
+#   variables:
+#     TARGET: AXCF3152
+#     VERSION: 2.56
+#     TARGET_LOW: axcf3152
 
-check_build:
-  stage: test
-  script:
-    - ls -al artifacts/
+# check_build:
+#   stage: test
+#   script:
+#     - ls -al artifacts/
 
-variables:
-  SAST_DISABLED: "false"
+# variables:
+#   SAST_DISABLED: "false"
 
 include:
   - template: Security/SAST.gitlab-ci.yml #코드 취약점 점검
@@ -79,8 +79,6 @@ sbom:
   artifacts:
     paths:
       - "gl-sbom-report.spdx.json"
-  tags:
-    - docker
 
 # sast:
 #   stage: security
