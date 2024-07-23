@@ -10,7 +10,7 @@ before_script:
 stages:
   - build
   - test
-  - security
+  - spdx
 
 
 .build_job_template: &build_job_template
@@ -66,6 +66,21 @@ variables:
 include:
   - template: Security/SAST.gitlab-ci.yml #코드 취약점 점검
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml #sbom 생성 (lock파일 필요)
+
+
+
+
+
+sbom:
+  stage: spdx
+  image: registry.gitlab.com/gitlab-org/security-products/gemnasium:latest
+  script:
+    - gemnasium --format spdx
+  artifacts:
+    paths:
+      - "gl-sbom-report.cyclonedx.json"
+  tags:
+    - docker
 
 # sast:
 #   stage: security
