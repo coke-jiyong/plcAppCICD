@@ -78,7 +78,7 @@ sbom:
     - gemnasium --format spdx
   artifacts:
     paths:
-      - "gl-sbom-report.cyclonedx.json"
+      - "gl-sbom-report.spdx.json"
   tags:
     - docker
 
