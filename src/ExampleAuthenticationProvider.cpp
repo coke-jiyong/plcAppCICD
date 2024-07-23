@@ -28,9 +28,9 @@ ExampleAuthenticationProvider::ExampleAuthenticationProvider(UmModuleEx& _mod)
     : mod(_mod)
 {  
     bool LicenseResult = true;
-    const std::string pub_key_path = "/opt/plcnext/apps/60002172000829/pub.key";
+    const std::string pub_key_path = "/opt/plcnext/apps/60002172000921/pub.key";
     const std::string token_path = "/opt/plcnext/otac/license/swidchauthclient.lic";
-    std::string PEM = readFileToString("/opt/plcnext/apps/60002172000829/AuthenticationProvider/certificates/certificate.pem");
+    std::string PEM = readFileToString("/opt/plcnext/apps/60002172000921/AuthenticationProvider/certificates/certificate.pem");
 
     const RscString<4096> pem(PEM.c_str());
     RscString<80> id("IDevID");
