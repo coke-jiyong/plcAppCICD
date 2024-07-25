@@ -80,20 +80,20 @@ include:
 
 
 
-# export-merged-sbom:
-#   before_script:
-#     - apt-get update
-#     - apt-get install -y  jq curl dos2unix
-#     - echo "$PRIVATE_TOKEN"
-#   stage: .post
-#   script:
-#     - |
-#       curl --header "Authorization: Bearer $PRIVATE_TOKEN" --output export.sh --url "https://gitlab.com/api/v4/snippets/3730445/raw"
-#     - dos2unix export.sh
-#     - bash export.sh
-#   artifacts:
-#     paths:
-#       - "gl-sbom-merged-*.cdx.json"
+export-merged-sbom:
+  before_script:
+    - apt-get update
+    - apt-get install -y  jq curl dos2unix
+    - echo "$PRIVATE_TOKEN"
+  stage: .post
+  script:
+    - |
+      curl --header "Authorization: Bearer $PRIVATE_TOKEN" --output export.sh --url "https://gitlab.com/api/v4/snippets/3730445/raw"
+    - dos2unix export.sh
+    - bash export.sh
+  artifacts:
+    paths:
+      - "gl-sbom-merged-*.cdx.json"
 
 
 
