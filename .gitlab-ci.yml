@@ -54,17 +54,17 @@ build-axcf3152:
     VERSION: 2.56
     TARGET_LOW: axcf3152
 
-# check_build:
-#   stage: test
-#   script:
-#     - ls -al artifacts/
+check_build:
+  stage: test
+  script:
+    - ls -al artifacts/
 
-# variables:
-#   SAST_DISABLED: "false"
+variables:
+  SAST_DISABLED: "false"
 
-# include:
-#   - template: Security/SAST.gitlab-ci.yml #코드 취약점 점검
-#   - template: Jobs/Dependency-Scanning.gitlab-ci.yml #sbom 생성 (lock파일 필요)
+include:
+  - template: Security/SAST.gitlab-ci.yml #코드 취약점 점검
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml #sbom 생성 (lock파일 필요)
 
 
 # sast:
