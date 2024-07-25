@@ -12,7 +12,7 @@ stages:
   - test
 
 
-.build_job_template: &build_job_template
+.build_job_template:
   script:
     - echo "----------${TARGET} .so file build start----------"
     - cd /home/otacauthServer/${TARGET_LOW}/work
@@ -31,7 +31,7 @@ stages:
     - artifacts/
 
 build-epc1502:
-  <<: *build_job_template
+  extends: .build_job_template
   stage: build
   variables:
     TARGET: EPC1502
@@ -39,7 +39,7 @@ build-epc1502:
     TARGET_LOW: epc1502
 
 build-epc1522:
-  <<: *build_job_template
+  extends: .build_job_template
   stage: build
   variables:
     TARGET: EPC1522
@@ -47,7 +47,7 @@ build-epc1522:
     TARGET_LOW: epc1522
 
 build-axcf3152:
-  <<: *build_job_template
+  extends: .build_job_template
   stage: build
   variables:
     TARGET: AXCF3152
