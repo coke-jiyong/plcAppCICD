@@ -3,8 +3,7 @@ image: jypark0209/plc-build:latest
 
 before_script:
   - echo "This is OTACauth for PLC build container."
-  - export PATH=$PATH:/home/plcncli
-  - mkdir -p $CI_PROJECT_DIR/artifacts
+  
 
 
 stages:
@@ -12,55 +11,54 @@ stages:
   - test
 
 
-build:
-  stage: build
+.build_job_template:
   script:
-    - echo "---------- libOTACauth-epc1502.so file build start----------"
-    - cd /home/otacauthServer/epc1502/work
+    - export PATH=$PATH:/home/plcncli
+    - mkdir -p $CI_PROJECT_DIR/artifacts
+    - echo "----------${TARGET} .so file build start----------"
+    - cd /home/otacauthServer/${TARGET_LOW}/work
     - plcncli new project -n OTACauth
     - cd OTACauth
     - rm -rf src/*
     - cp -r $CI_PROJECT_DIR/* .
-    - plcncli set target --add -n EPC1502
+    - plcncli set target --add -n ${TARGET}
     - plcncli build
-    - cd /home/otacauthServer/epc1502/work/OTACauth/bin/EPC1502_23.0.6.62/Release/lib
-    - mv libOTACauth.so libOTACauth-epc1502.so
-    - cp libOTACauth-epc1502.so $CI_PROJECT_DIR/artifacts/
-
-    - echo "---------- libOTACauth-epc1522.so file build start----------"
-    - cd /home/otacauthServer/epc1522/work
-    - plcncli new project -n OTACauth
-    - cd OTACauth
-    - rm -rf src/*
-    - cp -r $CI_PROJECT_DIR/* .
-    - plcncli set target --add -n EPC1522
-    - plcncli build
-    - cd /home/otacauthServer/epc1522/work/OTACauth/bin/EPC1522_23.0.6.54/Release/lib
-    - mv libOTACauth.so libOTACauth-epc1522.so
-    - cp libOTACauth-epc1522.so $CI_PROJECT_DIR/artifacts/
-    
-    - echo "---------- libOTACauth-axcf3152.so file build start----------"
-    - cd /home/otacauthServer/axcf3152/work
-    - plcncli new project -n OTACauth
-    - cd OTACauth
-    - rm -rf src/*
-    - cp -r $CI_PROJECT_DIR/* .
-    - plcncli set target --add -n AXCF3152
-    - plcncli build
-    - cd /home/otacauthServer/axcf3152/work/OTACauth/bin/AXCF3152_23.0.2.56/Release/lib
-    - mv libOTACauth.so libOTACauth-axcf3152.so
-    - cp libOTACauth-axcf3152.so $CI_PROJECT_DIR/artifacts/
+    - cd /home/otacauthServer/${TARGET_LOW}/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
+    - mv libOTACauth.so libOTACauth-${TARGET_LOW}.so
+    - cp libOTACauth-${TARGET_LOW}.so $CI_PROJECT_DIR/artifacts/
   artifacts:
     expire_in: 1 day
     paths:
     - artifacts/
 
+build-epc1502:
+  extends: .build_job_template
+  stage: build
+  variables:
+    TARGET: EPC1502
+    VERSION: 6.62
+    TARGET_LOW: epc1502
 
+build-epc1522:
+  extends: .build_job_template
+  stage: build
+  variables:
+    TARGET: EPC1522
+    VERSION: 6.54
+    TARGET_LOW: epc1522
 
-check_build:
-  stage: test
-  script:
-    - ls -al artifacts/
+build-axcf3152:
+  extends: .build_job_template
+  stage: build
+  variables:
+    TARGET: AXCF3152
+    VERSION: 2.56
+    TARGET_LOW: axcf3152
+
+# check_build:
+  # stage: test
+  # script:
+    # - ls -al artifacts/
 
 variables:
   SAST_DISABLED: "false"
