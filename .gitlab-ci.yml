@@ -13,7 +13,7 @@ stages:
 .build_job_template:
   script:
     - export PATH=$PATH:/home/plcncli
-    #- mkdir -p $CI_PROJECT_DIR/artifacts
+    - mkdir -p $CI_PROJECT_DIR/artifacts
     - echo "----------${TARGET} .so file build start----------"
     - cd /home/otacauthServer/${TARGET_LOW}/work
     - plcncli new project -n OTACauth
@@ -24,11 +24,11 @@ stages:
     - plcncli build
     - cd /home/otacauthServer/${TARGET_LOW}/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
     - mv libOTACauth.so libOTACauth-${TARGET_LOW}.so
-    #- cp libOTACauth-${TARGET_LOW}.so $CI_PROJECT_DIR/artifacts/
+    - cp libOTACauth-${TARGET_LOW}.so $CI_PROJECT_DIR/artifacts/
   artifacts:
     expire_in: 1 day
     paths:
-    - /home/otacauthServer/${TARGET_LOW}/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
+    - artifacts/
 
 build-epc1502:
   extends: .build_job_template
