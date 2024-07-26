@@ -13,8 +13,8 @@ void basic_json_test()
   obj["test"] = "value-test";
   obj["test-int"] = 42;
 
-  std::string jstr = obj.dump(0);
-  std::cout << jstr << std::endl;
+  //std::string jstr = obj.dump(0);
+  std::cout << obj << std::endl;
 }
 
 int main() {

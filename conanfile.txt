@@ -1,8 +1,6 @@
 [requires]
 libcurl/8.8.0
-openssl/3.2.2
+cpp-jwt/1.4
 
 [generators]
-CMakeDeps
-CMakeToolchain
 
