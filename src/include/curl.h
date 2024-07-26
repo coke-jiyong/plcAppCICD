@@ -6,7 +6,7 @@
 //#include <iostream>
 #include <string>
 #include <curl/curl.h>
-
+#include <iostream>
 using namespace std;
 
 class CURL_Handler {
