@@ -55,13 +55,6 @@ build-axcf3152:
     VERSION: 2.56
     TARGET_LOW: axcf3152
 
-merge_artifacts:
-  stage: test
-  script:
-    - mkdir -p $CI_PROJECT_DIR/merged_artifacts
-    - cp $CI_PROJECT_DIR/artifacts/* $CI_PROJECT_DIR/merged_artifacts/
-    - ls -al $CI_PROJECT_DIR/merged_artifacts/
-
 variables:
   SAST_DISABLED: "false"
 
