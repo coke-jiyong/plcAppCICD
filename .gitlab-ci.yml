@@ -28,7 +28,7 @@ stages:
   artifacts:
     expire_in: 1 day
     paths:
-    - /home/otacauthServer/${TARGET_LOW}/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib/libOTACauth-${TARGET_LOW}.so
+    - /home/otacauthServer/${TARGET_LOW}/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
 
 build-epc1502:
   extends: .build_job_template
