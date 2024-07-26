@@ -6,15 +6,13 @@
 //#include <iostream>
 #include <string>
 #include <curl/curl.h>
-
+#include <iostream>
 using namespace std;
 
 class CURL_Handler {
 	private :
 		bool			is_debug_print;
 		bool			is_header_print;
-		void			print_debug_info(const char *_format, ...);
-		
 		bool			is_init;
 		bool			is_set_url;
 		bool			is_post;
@@ -28,6 +26,10 @@ class CURL_Handler {
 		struct			curl_slist *headers;
 		
 		static size_t 	write_callback(void *_contents, size_t _size, size_t _nmemb, void *_userp);
+		template		<typename T>
+		void			print_debug_info(T t);
+		template		<typename T, typename... Args>
+		void			print_debug_info(T t, Args... args);
 		
 	public  :
 		CURL_Handler(bool _is_debug_print = false);

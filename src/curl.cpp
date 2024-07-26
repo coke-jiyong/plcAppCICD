@@ -27,15 +27,24 @@ CURL_Handler::~CURL_Handler(void) {
 	curl_slist_free_all(this->headers);
 	return ;
 }
-		
-void CURL_Handler::print_debug_info(const char *_format, ...) {
+
+
+template		<typename T>
+void CURL_Handler::print_debug_info(T t) {
 	if( !this->is_debug_print ) return ;
 	
 	fprintf(stdout, "CURL_Handler::");
-	va_list arg;
-	va_start(arg, _format);
-	vprintf(_format, arg);
-	va_end(arg);
+	std::cout << t << std::endl;
+	return ;
+}
+
+template		<typename T, typename... Args>
+void CURL_Handler::print_debug_info(T t, Args... args) {
+	if( !this->is_debug_print ) return ;
+	
+	fprintf(stdout, "CURL_Handler::");
+	std::cout << t ;
+	print_debug_info(args...);
 	
 	return ;
 }
@@ -112,7 +121,7 @@ void CURL_Handler::set_header(string _header) {
 	}
 	
 	this->headers = curl_slist_append(this->headers, _header.c_str());
-	this->print_debug_info("set_header() set [%s]\n", _header.c_str());
+	this->print_debug_info("set_header() set [", _header.c_str(),"]\n");
 	
 	return ;
 }
@@ -123,7 +132,7 @@ void CURL_Handler::set_url(string _url) {
 		return ;
 	}
 	
-	this->print_debug_info("set_url() set [%s]\n", _url.c_str());
+	this->print_debug_info("set_url() set [", _url.c_str(), "]\n");
 	this->is_set_url = true;
 	this->url = _url;
 	
@@ -154,8 +163,7 @@ int	CURL_Handler::request(void) {
 		return -1;
 	}
 	
-	this->print_debug_info("request() request [%s] %s\n", 
-				this->is_post ? "POST" : "GET", this->url.c_str());
+	this->print_debug_info("request() request [" , this->is_post ? "POST" : "GET" , "]" ,  this->url.c_str(),"\n");
 	
 	if( this->is_post ) {
 		curl_easy_setopt(this->curl_handle, CURLOPT_POSTFIELDS,		this->data.c_str());
