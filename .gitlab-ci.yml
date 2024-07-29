@@ -15,14 +15,14 @@ stages:
     - export PATH=$PATH:/home/plcncli
     - mkdir -p $CI_PROJECT_DIR/artifacts
     - echo "----------${TARGET} .so file build start----------"
-    - cd /home/otacauthServer/${TARGET_LOW}/work
+    - cd /home/work
     - plcncli new project -n OTACauth
     - cd OTACauth
     - rm -rf src/*
     - cp -r $CI_PROJECT_DIR/* .
     - plcncli set target --add -n ${TARGET}
     - plcncli build
-    - cd /home/otacauthServer/${TARGET_LOW}/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
+    - cd /home/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
     - mv libOTACauth.so libOTACauth-${TARGET_LOW}.so
     - cp libOTACauth-${TARGET_LOW}.so $CI_PROJECT_DIR/artifacts/
   artifacts:
