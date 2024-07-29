@@ -8,6 +8,7 @@ setup-job:
     stage: setup
     script:
         - apk update && apk add curl
+        - echo "$TEST_JSON"
         - |
             curl -k -X POST https://192.168.1.20:8443/plc/plc/api/v1/verifyOtac -H 'Content-Type: application/json; charset=utf-8' -d\
             '$TEST_JSON'
