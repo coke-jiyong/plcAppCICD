@@ -1,6 +1,6 @@
 image: alpine:latest
 
-stage:
+stages:
     - setup
 
 
