@@ -67,9 +67,10 @@ include:
 
 export-merged-sbom:
   before_script:
-    - apt-get update
-    - apt-get install -y  jq curl dos2unix
-    - echo "$PRIVATE_TOKEN"
+    #- apt-get update
+    #- apt-get install -y  jq curl dos2unix
+    #- echo "$PRIVATE_TOKEN"
+    - apk add --update jq curl dos2unix
   stage: .post
   script:
     - |
