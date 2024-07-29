@@ -11,14 +11,6 @@ setup-job:
         - echo $TEST_JSON
         - |
             curl -k -X POST https://192.168.1.20:8443/plc/plc/api/v1/verifyOtac \
-            -H 'Content-Type: application/json; charset=utf-8' \
-            -d \
-            '{
-            "otac": "12345678",
-            "pcDeviceId": "127.0.0.1",
-            "plcDeviceId": "192.168.1.20",
-            "systemId": "1",
-            "apiKey": "PLC_567052367261557962726962304c69424b374546433867766b4a314a33715851"
-            }'
+            -H 'Content-Type: application/json; charset=utf-8' -d $TEST_JSON
             
 
