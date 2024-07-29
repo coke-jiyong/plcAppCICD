@@ -6,12 +6,13 @@ before_script:
   
 
 stages:
+  - trigger_test
   - build
   - test
-  - trigger
+  
 
 trigger_API_test:
-  stage: trigger
+  stage: trigger_test
   trigger:
     include: 'API-test.yml'
   
