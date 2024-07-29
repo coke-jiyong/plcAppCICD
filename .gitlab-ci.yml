@@ -16,52 +16,52 @@ trigger_API_test:
     include: 'API-test.yml'
   
 
-# .build_job_template:
-#   script:
-#     - export PATH=$PATH:/home/plcncli
-#     - mkdir -p $CI_PROJECT_DIR/artifacts
-#     - echo "----------${TARGET} .so file build start----------"
-#     - cd /home/work
-#     - plcncli new project -n OTACauth
-#     - cd OTACauth
-#     - rm -rf src/*
-#     - cp -r $CI_PROJECT_DIR/* .
-#     - plcncli set target --add -n ${TARGET}
-#     - plcncli build
-#     - cd /home/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
-#     - mv libOTACauth.so libOTACauth-${TARGET_LOW}.so
-#     - cp libOTACauth-${TARGET_LOW}.so $CI_PROJECT_DIR/artifacts/
-#   artifacts:
-#     expire_in: 1 day
-#     paths:
-#     - artifacts/
+.build_job_template:
+  script:
+    - export PATH=$PATH:/home/plcncli
+    - mkdir -p $CI_PROJECT_DIR/artifacts
+    - echo "----------${TARGET} .so file build start----------"
+    - cd /home/work
+    - plcncli new project -n OTACauth
+    - cd OTACauth
+    - rm -rf src/*
+    - cp -r $CI_PROJECT_DIR/* .
+    - plcncli set target --add -n ${TARGET}
+    - plcncli build
+    - cd /home/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
+    - mv libOTACauth.so libOTACauth-${TARGET_LOW}.so
+    - cp libOTACauth-${TARGET_LOW}.so $CI_PROJECT_DIR/artifacts/
+  artifacts:
+    expire_in: 1 day
+    paths:
+    - artifacts/
 
-# build-epc1502:
-#   extends: .build_job_template
-#   stage: build
-#   image: jypark0209/plc-build:epc1502
-#   variables:
-#     TARGET: EPC1502
-#     VERSION: 6.62
-#     TARGET_LOW: epc1502
+build-epc1502:
+  extends: .build_job_template
+  stage: build
+  image: jypark0209/plc-build:epc1502
+  variables:
+    TARGET: EPC1502
+    VERSION: 6.62
+    TARGET_LOW: epc1502
 
-# build-epc1522:
-#   extends: .build_job_template
-#   stage: build
-#   image: jypark0209/plc-build:epc1522
-#   variables:
-#     TARGET: EPC1522
-#     VERSION: 6.54
-#     TARGET_LOW: epc1522
+build-epc1522:
+  extends: .build_job_template
+  stage: build
+  image: jypark0209/plc-build:epc1522
+  variables:
+    TARGET: EPC1522
+    VERSION: 6.54
+    TARGET_LOW: epc1522
 
-# build-axcf3152:
-#   extends: .build_job_template
-#   stage: build
-#   image: jypark0209/plc-build:axcf3152
-#   variables:
-#     TARGET: AXCF3152
-#     VERSION: 2.56
-#     TARGET_LOW: axcf3152
+build-axcf3152:
+  extends: .build_job_template
+  stage: build
+  image: jypark0209/plc-build:axcf3152
+  variables:
+    TARGET: AXCF3152
+    VERSION: 2.56
+    TARGET_LOW: axcf3152
 
 # variables:
 #   SAST_DISABLED: "false"
