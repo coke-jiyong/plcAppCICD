@@ -14,7 +14,8 @@ stages:
 trigger_API_test:
   stage: trigger_test
   trigger:
-    include: 'API-test.yml'
+    include:
+      - local: 'API-test.yml'
   
 
 .build_job_template:
