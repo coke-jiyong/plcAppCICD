@@ -74,20 +74,17 @@ include:
 export-merged-sbom:
   image: alpine:latest
   before_script:
-    #- apt-get update
-    #- apt-get install -y  jq curl dos2unix
-    #- echo "$PRIVATE_TOKEN"
-    - apk add --update jq curl dos2unix
+    - apk add --update jq curl
   stage: .post
   script:
     - |
-      curl --header "Authorization: Bearer $PRIVATE_TOKEN" --output export.sh --url "https://gitlab.com/api/v4/snippets/3730445/raw"
-    #- dos2unix export.sh
-    - cat export.sh
+      curl --header "Authorization: Bearer $PRIVATE_TOKEN"
+      --output export.sh --url "https://gitlab.com/api/v4/snippets/3730445/raw"
     - /bin/sh export.sh
   artifacts:
     paths:
       - "gl-sbom-merged-*.cdx.json"
+
 
 
 
