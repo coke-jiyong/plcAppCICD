@@ -72,6 +72,7 @@ include:
 
 
 export-merged-sbom:
+  image: alpine:latest
   before_script:
     #- apt-get update
     #- apt-get install -y  jq curl dos2unix
