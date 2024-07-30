@@ -72,18 +72,19 @@ include:
 
 
 export-merged-sbom:
-  image: alpine:latest
+  image: alpine
   before_script:
     - apk add --update jq curl
   stage: .post
   script:
-    - |
-      curl --header "Authorization: Bearer $PRIVATE_TOKEN"\
-      --output export.sh --url "https://gitlab.com/api/v4/snippets/3730445/raw"
+    - | 
+      curl --header "Authorization: Bearer $PRIVATE_TOKEN" --output export.sh --url "https://gitlab.com/api/v4/snippets/3730445/raw"
     - /bin/sh export.sh
   artifacts:
     paths:
       - "gl-sbom-merged-*.cdx.json"
+
+
 
 
 
