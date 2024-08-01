@@ -1,15 +1,16 @@
-image: alpine:latest
+image: node:16
 
 stages:
-    - setup
+    - test
 
-setup-job:
-    stage: setup
+API-request:
+    stage: test
+    before_script:
+        - npm install -g newman
     script:
-        - apk update && apk add curl
-        - |
-            RESPONSE=$(curl -k -X POST https://192.168.1.20:8443/plc/plc/api/v1/verifyOtac \
-              -H 'Content-Type: application/json; charset=utf-8' \
-              -d "$TEST_JSON")
-            echo "Response:"
-            echo "$RESPONSE"
+        - mkdir ./artifact
+        - newman run API_test.postman_collection.json --reporters cli,html --reporter-html-export ./artifact/report.html
+    artifact :
+        path:
+            - ./artifact
+
