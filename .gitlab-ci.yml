@@ -47,12 +47,6 @@ api_tests3:
 
 
 
-trigger_API_test:
-  stage: trigger_external_project
-  trigger:
-    project: jypark8/cpp-example
-
-
 .build_job_template:
   script:
     - export PATH=$PATH:/home/plcncli
@@ -102,6 +96,13 @@ build-axcf3152:
     VERSION: 2.56
     TARGET_LOW: axcf3152
 
+
+
+
+trigger_API_test:
+  stage: trigger_external_project
+  trigger:
+    project: jypark8/cpp-example
 # variables:
 #   SAST_DISABLED: "false"
 
