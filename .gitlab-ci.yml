@@ -24,7 +24,7 @@ api_tests:
     - newman run API_test.postman_collection.json --reporters cli,html --reporter-html-export report.html
   artifacts:
     paths:
-      - newman/report.html  
+      - report.html  
   allow_failure: false  
 
 .build_job_template:
