@@ -102,7 +102,7 @@ build-axcf3152:
 trigger_API_test:
   stage: trigger_external_project
   trigger:
-    project: jypark8/cpp-example
+    project: pjy1/c-example
 # variables:
 #   SAST_DISABLED: "false"
 
