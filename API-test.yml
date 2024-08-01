@@ -11,6 +11,6 @@ API-request:
         - mkdir ./artifact
         - newman run API_test.postman_collection.json --reporters cli,html --reporter-html-export ./artifact/report.html
     artifacts:
-        path:
+        paths:
             - ./artifact
 
