@@ -21,10 +21,7 @@ api_tests:
   before_script:
     - npm install -g newman  
   script:
-    - newman run API_test.postman_collection.json --reporters cli,html --reporter-html-export report.html
-  artifacts:
-    paths:
-      - report.html  
+    - newman run API_test.postman_collection.json
   allow_failure: false  
 
 .build_job_template:
