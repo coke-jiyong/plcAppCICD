@@ -18,22 +18,24 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n        \"systemId\":\"1\",\r\n        \"otac\":\"y9kcqe4q\",\r\n        \"pcDeviceId\":\"127.0.0.1\",\r\n        \"plcDeviceId\":\"192.168.1.10\",\r\n        \"apiKey\":\"PLC_567052367261557962726962304c69424b374546433867766b4a314a33715851\"\r\n}"
+					"raw": "{\r\n    \"systemId\": \"1\",\r\n    \"otac\": \"7xvzr52t\",\r\n    \"pcDeviceId\": \"127.0.0.1\",\r\n    \"plcDeviceId\": \"192.168.1.20\",\r\n    \"apiKey\": \"PLC_567052367261557962726962304c69424b374546433867766b4a314a33715851\"\r\n}"
 				},
 				"url": {
-					"raw": "https://devauthsdk.ssenstone.com/plc/plc/api/v1/verifyOtac",
+					"raw": "https://192.168.1.20:8443/plc/plc/api/v1/verifyOta",
 					"protocol": "https",
 					"host": [
-						"devauthsdk",
-						"ssenstone",
-						"com"
+						"192",
+						"168",
+						"1",
+						"20"
 					],
+					"port": "8443",
 					"path": [
 						"plc",
 						"plc",
 						"api",
 						"v1",
-						"verifyOtac"
+						"verifyOta"
 					]
 				}
 			},
