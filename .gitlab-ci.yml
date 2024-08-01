@@ -55,7 +55,7 @@ build-epc1502:
     TARGET: EPC1502
     VERSION: 6.62
     TARGET_LOW: epc1502
-  dependencies:
+  needs:
     - api_tests
 
 build-epc1522:
