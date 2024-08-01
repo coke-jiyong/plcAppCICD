@@ -10,7 +10,7 @@ API-request:
     script:
         - mkdir ./artifact
         - newman run API_test.postman_collection.json --reporters cli,html --reporter-html-export ./artifact/report.html
-    artifact :
+    artifacts:
         path:
             - ./artifact
 
