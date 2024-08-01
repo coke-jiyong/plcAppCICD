@@ -10,10 +10,7 @@ stages:
   
   
 
-trigger_API_test:
-  stage: trigger_external_project
-  trigger:
-    project: jypark8/cpp-example
+
 
 api_tests1:
   stage: test
@@ -47,6 +44,14 @@ api_tests3:
   allow_failure: false  
   needs:
     - api_tests2
+
+
+
+trigger_API_test:
+  stage: trigger_external_project
+  trigger:
+    project: jypark8/cpp-example
+
 
 .build_job_template:
   script:
