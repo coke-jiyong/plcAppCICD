@@ -5,16 +5,16 @@ before_script:
 
 stages:
   - test
-#  - trigger_test
+  - trigger_external_project
   - build
   
   
 
-# trigger_API_test:
-#   stage: trigger_test
-#   trigger:
-#     include:
-#       - local: 'API-test.yml'
+trigger_API_test:
+  stage: trigger_external_project
+  trigger:
+    project: jypark8/cpp-example
+
 api_tests1:
   stage: test
   image: node:16  
