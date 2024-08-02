@@ -112,6 +112,7 @@
 #     SEARCH_MAX_DEPTH: '10'
 #   stage: security
 stages:
+- build
 - test
 
 include:
