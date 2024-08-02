@@ -7,95 +7,123 @@
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 before_script:
 - echo "This is OTACauth for PLC build container."
+
 stages:
 - test
 - trigger_external_project
 - build
-".build_job_template":
+- security
+
+# ".build_job_template":
+#   script:
+#   - export PATH=$PATH:/home/plcncli
+#   - mkdir -p $CI_PROJECT_DIR/artifacts
+#   - echo "----------${TARGET} .so file build start----------"
+#   - cd /home/work
+#   - plcncli new project -n OTACauth
+#   - cd OTACauth
+#   - rm -rf src/*
+#   - cp -r $CI_PROJECT_DIR/* .
+#   - plcncli set target --add -n ${TARGET}
+#   - plcncli build
+#   - cd /home/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
+#   - mv libOTACauth.so libOTACauth-${TARGET_LOW}.so
+#   - cp libOTACauth-${TARGET_LOW}.so $CI_PROJECT_DIR/artifacts/
+#   artifacts:
+#     expire_in: 1 day
+#     paths:
+#     - artifacts/
+
+# api_tests1:
+#   stage: test
+#   image: node:16
+#   before_script:
+#   - npm install -g newman
+#   script:
+#   - newman run API_test.postman_collection.json
+#   allow_failure: false
+
+# api_tests2:
+#   stage: test
+#   image: node:16
+#   before_script:
+#   - npm install -g newman
+#   script:
+#   - newman run API_test.postman_collection.json
+#   allow_failure: false
+#   needs:
+#   - api_tests1
+
+# api_tests3:
+#   stage: test
+#   image: node:16
+#   before_script:
+#   - npm install -g newman
+#   script:
+#   - newman run API_test.postman_collection.json
+#   allow_failure: false
+#   needs:
+#   - api_tests2
+
+# build-epc1502:
+#   extends: ".build_job_template"
+#   stage: build
+#   image: jypark0209/plc-build:epc1502
+#   variables:
+#     TARGET: EPC1502
+#     VERSION: 6.62
+#     TARGET_LOW: epc1502
+#   needs:
+#   - api_tests3
+
+# build-epc1522:
+#   extends: ".build_job_template"
+#   stage: build
+#   image: jypark0209/plc-build:epc1522
+#   variables:
+#     TARGET: EPC1522
+#     VERSION: 6.54
+#     TARGET_LOW: epc1522
+#   needs:
+#   - api_tests3
+
+# build-axcf3152:
+#   extends: ".build_job_template"
+#   stage: build
+#   image: jypark0209/plc-build:axcf3152
+#   variables:
+#     TARGET: AXCF3152
+#     VERSION: 2.56
+#     TARGET_LOW: axcf3152
+#   needs:
+#   - api_tests3
+
+# trigger_API_test:
+#   stage: trigger_external_project
+#   trigger:
+#     project: pjy1/c-example
+
+# include:
+# - template: Security/SAST.gitlab-ci.yml
+# - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+
+# sast:
+#   variables:
+#     SEARCH_MAX_DEPTH: '10'
+#   stage: security
+
+
+export-merged-sbom:
+  image: alpine
+  before_script:
+    - apk add --update jq curl
+  stage: .post
   script:
-  - export PATH=$PATH:/home/plcncli
-  - mkdir -p $CI_PROJECT_DIR/artifacts
-  - echo "----------${TARGET} .so file build start----------"
-  - cd /home/work
-  - plcncli new project -n OTACauth
-  - cd OTACauth
-  - rm -rf src/*
-  - cp -r $CI_PROJECT_DIR/* .
-  - plcncli set target --add -n ${TARGET}
-  - plcncli build
-  - cd /home/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
-  - mv libOTACauth.so libOTACauth-${TARGET_LOW}.so
-  - cp libOTACauth-${TARGET_LOW}.so $CI_PROJECT_DIR/artifacts/
+    - | 
+      curl --header "Authorization: Bearer $PRIVATE_TOKEN" --output export.sh --url "https://gitlab.com/api/v4/snippets/3730445/raw"
+    - /bin/sh export.sh
   artifacts:
-    expire_in: 1 day
     paths:
-    - artifacts/
-api_tests1:
-  stage: test
-  image: node:16
-  before_script:
-  - npm install -g newman
-  script:
-  - newman run API_test.postman_collection.json
-  allow_failure: false
-api_tests2:
-  stage: test
-  image: node:16
-  before_script:
-  - npm install -g newman
-  script:
-  - newman run API_test.postman_collection.json
-  allow_failure: false
-  needs:
-  - api_tests1
-api_tests3:
-  stage: test
-  image: node:16
-  before_script:
-  - npm install -g newman
-  script:
-  - newman run API_test.postman_collection.json
-  allow_failure: false
-  needs:
-  - api_tests2
-build-epc1502:
-  extends: ".build_job_template"
-  stage: build
-  image: jypark0209/plc-build:epc1502
-  variables:
-    TARGET: EPC1502
-    VERSION: 6.62
-    TARGET_LOW: epc1502
-  needs:
-  - api_tests3
-build-epc1522:
-  extends: ".build_job_template"
-  stage: build
-  image: jypark0209/plc-build:epc1522
-  variables:
-    TARGET: EPC1522
-    VERSION: 6.54
-    TARGET_LOW: epc1522
-  needs:
-  - api_tests3
-build-axcf3152:
-  extends: ".build_job_template"
-  stage: build
-  image: jypark0209/plc-build:axcf3152
-  variables:
-    TARGET: AXCF3152
-    VERSION: 2.56
-    TARGET_LOW: axcf3152
-  needs:
-  - api_tests3
-trigger_API_test:
-  stage: trigger_external_project
-  trigger:
-    project: pjy1/c-example
-include:
-- template: Security/SAST.gitlab-ci.yml
-- template: Jobs/Dependency-Scanning.gitlab-ci.yml
-sast:
-  variables:
-    SEARCH_MAX_DEPTH: '10'
-  stage: test
+      - "gl-sbom-merged-*.cdx.json"
+
+
