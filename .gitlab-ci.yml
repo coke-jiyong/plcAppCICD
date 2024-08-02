@@ -111,6 +111,9 @@
 #   variables:
 #     SEARCH_MAX_DEPTH: '10'
 #   stage: security
+
+before_script:
+  - echo $CI_PIPELINE_ID
 stages:
 - build
 - test
