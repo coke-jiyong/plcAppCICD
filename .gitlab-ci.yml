@@ -131,14 +131,14 @@ gemnasium-dependency_scanning:
 export-merged-sbom:
   image: alpine:latest
   before_script:
-    - apk add --update jq curl
-    - apk add --no-cache bash
+    - apk add --update jq curl dos2unix bash
   stage: .post
   script:
     - | 
       curl --header "Authorization: Bearer $PRIVATE_TOKEN" --output export.sh --url "https://gitlab.com/api/v4/snippets/3730445/raw"
     - cat export.sh
     - chmod a+x export.sh
+    - dos2unix export.sh
     - bash export.sh
   artifacts:
     paths:
