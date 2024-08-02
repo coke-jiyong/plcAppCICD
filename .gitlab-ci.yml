@@ -129,7 +129,7 @@ gemnasium-dependency_scanning:
     - if: $CI_MERGE_REQUEST_IID
 
 export-merged-sbom:
-  image: alpine
+  image: alpine:latest
   before_script:
     - apk add --update jq curl
   stage: .post
