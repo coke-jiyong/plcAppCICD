@@ -138,7 +138,7 @@ export-merged-sbom:
       curl --header "Authorization: Bearer $PRIVATE_TOKEN" --output export.sh --url "https://gitlab.com/api/v4/snippets/3730445/raw"
     - cat export.sh
     - chmod a+x export.sh
-    - ./export.sh
+    - sh export.sh
   artifacts:
     paths:
       - "gl-sbom-merged-*.cdx.json"
