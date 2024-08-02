@@ -114,71 +114,26 @@
 stages:
 - build
 - test
-- export
 
 include:
 - template: Jobs/Dependency-Scanning.gitlab-ci.yml
 
 # override the dependency scanning job
 gemnasium-dependency_scanning:
+  #tags: [ saas-linux-large-amd64 ]
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
     - if: $CI_MERGE_REQUEST_IID
 
 export-merged-sbom:
   image: alpine
-  stage: export
   before_script:
     - apk add --update jq curl
+  stage: .post
   script:
-    - |
-      cat << EOF > export.sh
-      #!/bin/sh
-
-      function create_export {
-        curl --silent \
-        --header "PRIVATE-TOKEN: $PRIVATE_TOKEN" \
-        -X 'POST' --data "export_type=sbom" \
-        "https://gitlab.com/api/v4/pipelines/$CI_PIPELINE_ID/dependency_list_exports" \
-        | jq '.id'
-      }
-
-      function check_status {
-        curl --silent \
-          --header "PRIVATE-TOKEN: $PRIVATE_TOKEN" \
-          --write-out "%{http_code}" --output /dev/null \
-          https://gitlab.com/api/v4/dependency_list_exports/$1
-      }
-
-      function download {
-        curl --header "PRIVATE-TOKEN: $PRIVATE_TOKEN" \
-          --output "gl-sbom-merged-$CI_PIPELINE_ID.cdx.json" \
-          "https://gitlab.com/api/v4/dependency_list_exports/$1/download"
-      }
-
-      function export_sbom {
-        local ID=$(create_export)
-
-        for run in $(seq 0 3); do
-          local STATUS=$(check_status $ID)
-          if [ $STATUS -eq "200" ]; then
-            download $ID
-            exit 0
-          elif [ $STATUS -ne "202" ]; then
-            exit 1
-          fi
-
-          echo "Waiting for JSON to be generated"
-          sleep 5
-        done
-
-        exit 1
-      }
-
-      export_sbom
-      EOF
-    - chmod +x export.sh
-    - ./export.sh
+    - | 
+      curl --header "Authorization: Bearer $PRIVATE_TOKEN" --output export.sh --url "https://gitlab.com/api/v4/snippets/3730445/raw"
+    - /bin/sh export.sh
   artifacts:
     paths:
       - "gl-sbom-merged-*.cdx.json"
