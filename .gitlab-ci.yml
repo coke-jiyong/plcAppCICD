@@ -28,6 +28,7 @@ stages:
     paths:
     - artifacts/
 
+#API 테스트 (의존성 1->2->3->build)
 api_tests1:
   stage: test
   image: node:16
@@ -92,14 +93,16 @@ build-axcf3152:
   needs:
   - api_tests3
 
+#외부 프로젝트 트리거
 trigger_API_test:
   stage: trigger_external_project
   trigger:
     project: pjy1/c-example
 
+#템플릿 include
 include:
-- template: Jobs/SAST.gitlab-ci.yml
-- template: Jobs/Dependency-Scanning.gitlab-ci.yml
+- template: Jobs/SAST.gitlab-ci.yml #코드 취약점 점검
+- template: Jobs/Dependency-Scanning.gitlab-ci.yml  #SBOM 생성을 위한 의존성 검사 (lock 파일 필요)
 
 sast:
   variables:
