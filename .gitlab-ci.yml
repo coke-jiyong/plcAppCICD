@@ -98,7 +98,7 @@ trigger_API_test:
     project: pjy1/c-example
 
 include:
-- template: Security/SAST.gitlab-ci.yml
+- template: Jobs/SAST.gitlab-ci.yml
 - template: Jobs/Dependency-Scanning.gitlab-ci.yml
 
 sast:
