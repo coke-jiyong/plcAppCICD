@@ -33,12 +33,13 @@ TEST(ReturnValue, HostId)
     EXPECT_TRUE(c.validateHostId("34567890"));
 }
 
-int main()
+int main(int argc, char **argv)
 {
 
-    testing::InitGoogleTest();
+    testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 
     return 0;
 }
+
 
