@@ -9,11 +9,37 @@ stages:
 - trigger
 
 
-#unit test
-unit_test:
-  stage: test
-  trigger:
-    include: 'tests/unit_test.yml'
+# #unit test
+# unit_test:
+#   stage: test
+#   trigger:
+#     include: 'tests/unit_test.yml'
+
+
+
+
+API-request:
+    image: gcc
+    stage: test
+    before_script:
+        - apt update
+        - apt install -y cmake libcurl4-openssl-dev libssl-dev libgtest-dev nlohmann-json3-dev
+        - mkdir gtest/build
+        - cd gtest/build
+    script:
+        - cmake ..
+        - make
+        - chmod a+x GTest
+        - ./GTest --gtest_output="xml:report.xml"
+        - ls -al
+    artifacts:
+        when: always
+        paths:
+            - gtest/build/report.xml
+        reports:
+            junit: gtest/build/report.xml
+            
+    allow_failure: false
 
 # #API 테스트 (의존성 1->2->3->build)
 # api_tests1:
