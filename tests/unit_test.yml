@@ -19,9 +19,9 @@ API-request:
     artifacts:
         when: always
         paths:
-            - report.xml
+            - gtest/build/report.xml
         reports:
-            junit: report.xml
+            junit: gtest/build/report.xml
             
     allow_failure: false
     
