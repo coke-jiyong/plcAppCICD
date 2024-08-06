@@ -9,4 +9,4 @@ API-request:
         - npm install -g newman
     script:
         - newman run API_test.postman_collection.json
-    allow_failure: false
+    

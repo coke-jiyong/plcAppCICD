@@ -14,7 +14,8 @@ api_tests3:
   stage: test
   trigger:
     include: 'tests/API-test.yml'
-
+  allow_failure: false
+  
 
 #템플릿 include
 include:
