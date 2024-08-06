@@ -8,6 +8,7 @@ API-request:
     before_script:
         - apt update
         - apt install -y cmake libcurl4-openssl-dev libssl-dev libgtest-dev nlohmann-json3-dev
+        - mkdir gtest/build
         - cd gtest/build
     script:
         - cmake ..
