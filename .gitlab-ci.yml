@@ -16,8 +16,6 @@ stages:
 #     include: 'tests/unit_test.yml'
 
 
-
-
 API-request:
     image: gcc
     stage: test
@@ -41,119 +39,120 @@ API-request:
             
     allow_failure: false
 
-# #API 테스트 (의존성 1->2->3->build)
-# api_tests1:
-#   stage: test
-#   image: node:16
-#   before_script:
-#   - npm install -g newman
-#   script:
-#   - newman run API_test.postman_collection.json
-#   allow_failure: false
 
-# api_tests2:
-#   stage: test
-#   image: node:16
-#   before_script:
-#   - npm install -g newman
-#   script:
-#   - newman run API_test.postman_collection.json
-#   allow_failure: false
-#   needs:
-#   - api_tests1
+#API 테스트 (의존성 1->2->3->build)
+api_tests1:
+  stage: test
+  image: node:16
+  before_script:
+  - npm install -g newman
+  script:
+  - newman run API_test.postman_collection.json
+  allow_failure: false
 
-# api_tests3:
-#   stage: test
-#   image: node:16
-#   before_script:
-#   - npm install -g newman
-#   script:
-#   - newman run API_test.postman_collection.json
-#   allow_failure: false
-#   needs:
-#   - api_tests2
+api_tests2:
+  stage: test
+  image: node:16
+  before_script:
+  - npm install -g newman
+  script:
+  - newman run API_test.postman_collection.json
+  allow_failure: false
+  needs:
+  - api_tests1
 
-# #템플릿 include
-# include:
-# - template: Jobs/SAST.gitlab-ci.yml #코드 취약점 점검
-# - template: Jobs/Dependency-Scanning.gitlab-ci.yml  #SBOM 생성을 위한 의존성 검사 (lock 파일 필요)
+api_tests3:
+  stage: test
+  image: node:16
+  before_script:
+  - npm install -g newman
+  script:
+  - newman run API_test.postman_collection.json
+  allow_failure: false
+  needs:
+  - api_tests2
 
-
-# sast:
-#   stage: security
-#   variables:
-#     SEARCH_MAX_DEPTH: '10'
-#   script:
-#     - echo "Running SAST"
-
-# dependency_scanning:
-#   stage: security
-#   script:
-#     - echo "Running Dependency Scan"
-#     - cd conan
+#템플릿 include
+include:
+- template: Jobs/SAST.gitlab-ci.yml #코드 취약점 점검
+- template: Jobs/Dependency-Scanning.gitlab-ci.yml  #SBOM 생성을 위한 의존성 검사 (lock 파일 필요)
 
 
-# ".build_job_template":
-#   script:
-#   - export PATH=$PATH:/home/plcncli
-#   - mkdir -p $CI_PROJECT_DIR/artifacts
-#   - echo "----------${TARGET} .so file build start----------"
-#   - cd /home/work
-#   - plcncli new project -n OTACauth
-#   - cd OTACauth
-#   - rm -rf src/*
-#   - cp -r $CI_PROJECT_DIR/* .
-#   - plcncli set target --add -n ${TARGET}
-#   - plcncli build
-#   - cd /home/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
-#   - mv libOTACauth.so libOTACauth-${TARGET_LOW}.so
-#   - cp libOTACauth-${TARGET_LOW}.so $CI_PROJECT_DIR/artifacts/
-#   artifacts:
-#     expire_in: 1 day
-#     paths:
-#     - artifacts/
+sast:
+  stage: security
+  variables:
+    SEARCH_MAX_DEPTH: '10'
+  script:
+    - echo "Running SAST"
+
+dependency_scanning:
+  stage: security
+  script:
+    - echo "Running Dependency Scan"
+    - cd conan
+
+
+".build_job_template":
+  script:
+  - export PATH=$PATH:/home/plcncli
+  - mkdir -p $CI_PROJECT_DIR/artifacts
+  - echo "----------${TARGET} .so file build start----------"
+  - cd /home/work
+  - plcncli new project -n OTACauth
+  - cd OTACauth
+  - rm -rf src/*
+  - cp -r $CI_PROJECT_DIR/* .
+  - plcncli set target --add -n ${TARGET}
+  - plcncli build
+  - cd /home/work/OTACauth/bin/${TARGET}_23.0.${VERSION}/Release/lib
+  - mv libOTACauth.so libOTACauth-${TARGET_LOW}.so
+  - cp libOTACauth-${TARGET_LOW}.so $CI_PROJECT_DIR/artifacts/
+  artifacts:
+    expire_in: 1 day
+    paths:
+    - artifacts/
 
 
 
 
-# build-epc1502:
-#   extends: ".build_job_template"
-#   stage: build
-#   image: jypark0209/plc-build:epc1502
-#   variables:
-#     TARGET: EPC1502
-#     VERSION: 6.62
-#     TARGET_LOW: epc1502
-#   needs:
-#   - api_tests3
+build-epc1502:
+  extends: ".build_job_template"
+  stage: build
+  image: jypark0209/plc-build:epc1502
+  variables:
+    TARGET: EPC1502
+    VERSION: 6.62
+    TARGET_LOW: epc1502
+  needs:
+  - api_tests3
 
-# build-epc1522:
-#   extends: ".build_job_template"
-#   stage: build
-#   image: jypark0209/plc-build:epc1522
-#   variables:
-#     TARGET: EPC1522
-#     VERSION: 6.54
-#     TARGET_LOW: epc1522
-#   needs:
-#   - api_tests3
+build-epc1522:
+  extends: ".build_job_template"
+  stage: build
+  image: jypark0209/plc-build:epc1522
+  variables:
+    TARGET: EPC1522
+    VERSION: 6.54
+    TARGET_LOW: epc1522
+  needs:
+  - api_tests3
 
-# build-axcf3152:
-#   extends: ".build_job_template"
-#   stage: build
-#   image: jypark0209/plc-build:axcf3152
-#   variables:
-#     TARGET: AXCF3152
-#     VERSION: 2.56
-#     TARGET_LOW: axcf3152
-#   needs:
-#   - api_tests3
+build-axcf3152:
+  extends: ".build_job_template"
+  stage: build
+  image: jypark0209/plc-build:axcf3152
+  variables:
+    TARGET: AXCF3152
+    VERSION: 2.56
+    TARGET_LOW: axcf3152
+  needs:
+  - api_tests3
 
-# #외부 프로젝트 트리거
-# trigger_external_project:
-#   stage: trigger
-#   trigger:
-#     project: pjy1/c-example
+#외부 프로젝트 트리거
+trigger_external_project:
+  stage: trigger
+  trigger:
+    project: pjy1/c-example
 
 
 
