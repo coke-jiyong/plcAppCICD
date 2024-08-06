@@ -47,7 +47,7 @@ api_tests1:
   before_script:
   - npm install -g newman
   script:
-  - newman run API_test.postman_collection.json
+  - newman run tests/API_test.postman_collection.json
   allow_failure: false
 
 api_tests2:
@@ -56,7 +56,7 @@ api_tests2:
   before_script:
   - npm install -g newman
   script:
-  - newman run API_test.postman_collection.json
+  - newman run tests/API_test.postman_collection.json
   allow_failure: false
   needs:
   - api_tests1
@@ -67,7 +67,7 @@ api_tests3:
   before_script:
   - npm install -g newman
   script:
-  - newman run API_test.postman_collection.json
+  - newman run tests/API_test.postman_collection.json
   allow_failure: false
   needs:
   - api_tests2
@@ -153,6 +153,7 @@ trigger_external_project:
   stage: trigger
   trigger:
     project: pjy1/c-example
+
 
 
 
