@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ProjectSettings xmlns="http://www.phoenixcontact.com/schema/cliproject">
-  <Type>project</Type>
+<ProjectSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.phoenixcontact.com/schema/cliproject">
+  <Target>EPC1502,2023.0.6 LTS (23.0.6.62)</Target>
   <Version>2.0</Version>
   <Name>Test</Name>
   <GenerateDTArrayNameByType>true</GenerateDTArrayNameByType>

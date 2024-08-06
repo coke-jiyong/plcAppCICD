@@ -1,4 +1,4 @@
-#include "include/curl.h"
+#include "include/custom/curl.h"
 
 CURL_Handler::CURL_Handler(bool _is_debug_print) {
 	this->is_debug_print  = false;
