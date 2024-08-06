@@ -1,0 +1,21 @@
+
+stages:
+    - unit_test
+
+API-request:
+    image: gcc
+    stage: unit_test
+    before_script:
+        - apt update
+        - apt install -y cmake libcurl4-openssl-dev libssl-dev libgtest-dev nlohmann-json3-dev
+        - cd gtest/build
+    script:
+        - cmake ..
+        - make
+        - ./Gtest --gtest_output="xml:report.xml"
+    # artifacts:
+    #     expire_in: 1 day
+    #     paths:
+    #         - gtest/build
+    allow_failure: false
+    

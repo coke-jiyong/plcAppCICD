@@ -1,3 +1,0 @@
-/home/work/latest/gtest/build/CMakeFiles/rebuild_cache.dir
-/home/work/latest/gtest/build/CMakeFiles/edit_cache.dir
-/home/work/latest/gtest/build/CMakeFiles/GTest.dir

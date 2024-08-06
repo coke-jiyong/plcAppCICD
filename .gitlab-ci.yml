@@ -9,13 +9,43 @@ stages:
 - trigger
 
 
-#API .yml 테스트 (의존성)
-api_tests3:
+#unit test
+unit_test:
   stage: test
   trigger:
-    include: 'tests/API-test.yml'
+    include: 'tests/unit_test.yml'
+
+#API 테스트 (의존성 1->2->3->build)
+api_tests1:
+  stage: test
+  image: node:16
+  before_script:
+  - npm install -g newman
+  script:
+  - newman run API_test.postman_collection.json
   allow_failure: false
 
+api_tests2:
+  stage: test
+  image: node:16
+  before_script:
+  - npm install -g newman
+  script:
+  - newman run API_test.postman_collection.json
+  allow_failure: false
+  needs:
+  - api_tests1
+
+api_tests3:
+  stage: test
+  image: node:16
+  before_script:
+  - npm install -g newman
+  script:
+  - newman run API_test.postman_collection.json
+  allow_failure: false
+  needs:
+  - api_tests2
 
 #템플릿 include
 include:
@@ -57,37 +87,7 @@ dependency_scanning:
     paths:
     - artifacts/
 
-# #API 테스트 (의존성 1->2->3->build)
-# api_tests1:
-#   stage: test
-#   image: node:16
-#   before_script:
-#   - npm install -g newman
-#   script:
-#   - newman run API_test.postman_collection.json
-#   allow_failure: false
 
-# api_tests2:
-#   stage: test
-#   image: node:16
-#   before_script:
-#   - npm install -g newman
-#   script:
-#   - newman run API_test.postman_collection.json
-#   allow_failure: false
-#   needs:
-#   - api_tests1
-
-# api_tests3:
-#   stage: test
-#   image: node:16
-#   before_script:
-#   - npm install -g newman
-#   script:
-#   - newman run API_test.postman_collection.json
-#   allow_failure: false
-#   needs:
-#   - api_tests2
 
 
 build-epc1502:
