@@ -16,7 +16,7 @@ stages:
 #     include: 'tests/unit_test.yml'
 
 
-API-request:
+unit_test:
     image: gcc
     stage: test
     before_script:
