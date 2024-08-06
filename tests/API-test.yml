@@ -8,5 +8,15 @@ API-request:
     before_script:
         - npm install -g newman
     script:
-        - newman run API_test.postman_collection.json
+        - newman run ./API_test.postman_collection.json
+    allow_failure: false
     
+# #API 테스트 (의존성 1->2->3->build)
+# api_tests1:
+#   stage: test
+#   image: node:16
+#   before_script:
+#   - npm install -g newman
+#   script:
+#   - newman run API_test.postman_collection.json
+#   allow_failure: false

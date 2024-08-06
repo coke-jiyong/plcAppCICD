@@ -6,7 +6,7 @@ stages:
 - test
 - security
 - build
-- trigger_external_project
+- trigger
 
 
 #API .yml 테스트 (의존성)
@@ -15,7 +15,7 @@ api_tests3:
   trigger:
     include: 'tests/API-test.yml'
   allow_failure: false
-  
+
 
 #템플릿 include
 include:
@@ -124,8 +124,8 @@ build-axcf3152:
   - api_tests3
 
 #외부 프로젝트 트리거
-trigger_API_test:
-  stage: trigger_external_project
+trigger_external_project:
+  stage: trigger
   trigger:
     project: pjy1/c-example
 
