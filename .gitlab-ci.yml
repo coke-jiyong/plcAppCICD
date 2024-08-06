@@ -3,10 +3,39 @@ before_script:
 - echo "This is OTACauth for PLC build container."
 
 stages:
+- trigger
 - test
-- trigger_external_project
-- build
 - security
+- build
+- trigger_external_project
+
+
+#API .yml 테스트 (의존성)
+api_tests3:
+  stage: trigger
+  trigger:
+    include: 'tests/API-test.yml'
+
+
+#템플릿 include
+include:
+- template: Jobs/SAST.gitlab-ci.yml #코드 취약점 점검
+- template: Jobs/Dependency-Scanning.gitlab-ci.yml  #SBOM 생성을 위한 의존성 검사 (lock 파일 필요)
+
+
+sast:
+  stage: security
+  variables:
+    SEARCH_MAX_DEPTH: '10'
+  script:
+    - echo "Running SAST"
+
+dependency_scanning:
+  stage: security
+  script:
+    - echo "Running Dependency Scan"
+    - cd conan
+
 
 ".build_job_template":
   script:
@@ -28,37 +57,38 @@ stages:
     paths:
     - artifacts/
 
-#API 테스트 (의존성 1->2->3->build)
-api_tests1:
-  stage: test
-  image: node:16
-  before_script:
-  - npm install -g newman
-  script:
-  - newman run API_test.postman_collection.json
-  allow_failure: false
+# #API 테스트 (의존성 1->2->3->build)
+# api_tests1:
+#   stage: test
+#   image: node:16
+#   before_script:
+#   - npm install -g newman
+#   script:
+#   - newman run API_test.postman_collection.json
+#   allow_failure: false
 
-api_tests2:
-  stage: test
-  image: node:16
-  before_script:
-  - npm install -g newman
-  script:
-  - newman run API_test.postman_collection.json
-  allow_failure: false
-  needs:
-  - api_tests1
+# api_tests2:
+#   stage: test
+#   image: node:16
+#   before_script:
+#   - npm install -g newman
+#   script:
+#   - newman run API_test.postman_collection.json
+#   allow_failure: false
+#   needs:
+#   - api_tests1
 
-api_tests3:
-  stage: test
-  image: node:16
-  before_script:
-  - npm install -g newman
-  script:
-  - newman run API_test.postman_collection.json
-  allow_failure: false
-  needs:
-  - api_tests2
+# api_tests3:
+#   stage: test
+#   image: node:16
+#   before_script:
+#   - npm install -g newman
+#   script:
+#   - newman run API_test.postman_collection.json
+#   allow_failure: false
+#   needs:
+#   - api_tests2
+
 
 build-epc1502:
   extends: ".build_job_template"
@@ -99,13 +129,5 @@ trigger_API_test:
   trigger:
     project: pjy1/c-example
 
-#템플릿 include
-include:
-- template: Jobs/SAST.gitlab-ci.yml #코드 취약점 점검
-- template: Jobs/Dependency-Scanning.gitlab-ci.yml  #SBOM 생성을 위한 의존성 검사 (lock 파일 필요)
 
-sast:
-  variables:
-    SEARCH_MAX_DEPTH: '10'
-  stage: security
 

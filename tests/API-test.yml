@@ -1,0 +1,12 @@
+image: node:16
+
+stages:
+    - test
+
+API-request:
+    stage: test
+    before_script:
+        - npm install -g newman
+    script:
+        - newman run API_test.postman_collection.json
+    allow_failure: false
