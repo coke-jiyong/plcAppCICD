@@ -13,8 +13,8 @@ API-request:
     script:
         - cmake ..
         - make
-        - chmod a+x Gtest
-        - ./Gtest --gtest_output="xml:report.xml"
+        - chmod a+x GTest
+        - ./GTest --gtest_output="xml:report.xml"
     # artifacts:
     #     expire_in: 1 day
     #     paths:
