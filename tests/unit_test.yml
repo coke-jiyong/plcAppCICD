@@ -16,9 +16,12 @@ API-request:
         - chmod a+x GTest
         - ./GTest --gtest_output="xml:report.xml"
         - ls -al
-    # artifacts:
-    #     expire_in: 1 day
-    #     paths:
-    #         - gtest/build
+    artifacts:
+        when: always
+        paths:
+            - report.xml
+        reports:
+            junit: report.xml
+            
     allow_failure: false
     
