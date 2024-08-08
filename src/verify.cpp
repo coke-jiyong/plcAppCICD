@@ -185,9 +185,7 @@ vector<string> split(string input, char dlim)
 
 int getConnectedIp(std::string &buf)
 {
-
-    std::string command = "ip -o link show | awk -F': ' '{print $2}' | awk -F'@' '{print $1}'";
-    FILE *pipe = popen(command.c_str(), "r");
+    FILE *pipe = popen("ip -o link show | awk -F': ' '{print $2}' | awk -F'@' '{print $1}'", "r");
     if (!pipe)
         return -1;
 
