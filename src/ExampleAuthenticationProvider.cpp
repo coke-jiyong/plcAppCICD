@@ -7,11 +7,9 @@
 #include "include/ExampleAuthenticationProvider.hpp"
 #include "include/UmModuleEx.hpp"
 #include "include/UmModuleExConfig.hpp"
-#include "include/custom/verify.h"
 
 #include "Arp/System/Rsc/Services/RscString.hxx"
 #include "Arp/System/Commons/Services/Security/IDeviceIdentityValidatorService.hpp"
-#include "Arp/System/Commons/Services/Security/IdentityValidationResult.hpp"
 #include "Arp/System/Commons/Services/Security/IdentityValidationError.hpp"
 #include "Arp/System/Rsc/ServiceManager.hpp"
 using namespace Arp::System::Rsc;
@@ -19,9 +17,6 @@ using namespace Arp::System::Rsc::Services;
 using namespace Arp::System::Commons::Services::Security;
 using namespace std;
 
-static string error_string_std;
-static string error_string_arp;
-static IdentityValidationResult result;
 namespace Arp
 {
     namespace System
@@ -32,11 +27,7 @@ namespace Arp
                 : mod(_mod)
             {
                 bool LicenseResult = true;
-                const std::string pub_key_path = "/opt/plcnext/apps/60002172000921/pub.key";
-                const std::string token_path = "/opt/plcnext/otac/license/swidchauthclient.lic";
-                std::string PEM = readFileToString("/opt/plcnext/apps/60002172000921/AuthenticationProvider/certificates/certificate.pem");
-
-                const RscString<4096> pem(PEM.c_str());
+                const RscString<4096> pem(this->PEM.c_str());
                 RscString<80> id("IDevID");
 
                 IDeviceIdentityValidatorService::Ptr ptr;
@@ -89,19 +80,17 @@ namespace Arp
                 if (!mod.UserAuthStarted())
                 {
 
-                    log.PrintDebug("OTACAuthenticationProvider: License check failed");
-
                     if (!error_string_std.empty())
                     {
-                        log.Debug("--- {0}", error_string_std);
+                        log.Debug("OTACAuthenticationProvider: License check failed - {0}", error_string_std);
                     }
                     if (!error_string_arp.empty())
                     {
-                        log.Debug("--- {0}", error_string_arp);
+                        log.Debug("OTACAuthenticationProvider: License check failed - {0}", error_string_arp);
                     }
                     if (result.Error != IdentityValidationError::None)
                     {
-                        log.Debug("--- {0}", result.Error);
+                        log.Debug("OTACAuthenticationProvider: License check failed - {0}", result.Error);
                     }
 
                     return UmAuthenticationResult::Failed;
@@ -110,20 +99,16 @@ namespace Arp
                 log.Debug("OTACAuthenticationProvider: License check success.");
                 const UserConfTag &userconf = mod.GetConfig()->userConf;
                 Verify handler(password.CStr());
-#if 1
                 if (!handler.Set_Host_IP())
                 {
                     log.Debug("OTACAuthenticationProvider: Set_Host_IP failed.");
                     return UmAuthenticationResult::Failed;
                 }
-#endif
                 handler.Set_Post(userconf.url.CStr());
                 handler.Request();
                 Json::Value root = handler.Get_Root();
 
-#if 1
                 log.Debug("OTACAuthenticationProvider: Host Address : {0}", handler.Get_Ip());
-#endif
                 log.Debug("OTACAuthenticationProvider: Server Address : {0}", userconf.url.CStr());
                 log.Debug("OTACAuthenticationProvider: {0}", handler.Get_Response());
 

@@ -9,6 +9,7 @@
 #include "Arp/System/Commons/Logging.h"
 #include "custom/curl.h"
 #include "custom/json.h"
+#include "custom/verify.h"
 #include <sys/socket.h>
 #include <netdb.h>
 #include <ifaddrs.h>
@@ -17,7 +18,8 @@
 #include <cstring>
 #include <fstream>
 #define IP_SIZE 16
-
+#include "Arp/System/Commons/Services/Security/IdentityValidationResult.hpp"
+using namespace Arp::System::Commons::Services::Security;
 namespace Arp
 {
     namespace System
@@ -56,6 +58,12 @@ namespace Arp
 
             private:
                 UmModuleEx &mod;
+                string error_string_std;
+                string error_string_arp;
+                IdentityValidationResult result;
+                const std::string pub_key_path = "/opt/plcnext/apps/60002172000921/pub.key";
+                const std::string token_path = "/opt/plcnext/otac/license/swidchauthclient.lic";
+                const std::string PEM = readFileToString("/opt/plcnext/apps/60002172000921/AuthenticationProvider/certificates/certificate.pem");
             };
 
             ///////////////////////////////////////////////////////////////////////////////
