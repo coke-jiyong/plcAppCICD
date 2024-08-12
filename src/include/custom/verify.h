@@ -4,6 +4,11 @@
 #include "json.h"
 #include "curl.h"
 #include "../../jwt/jwt.hpp"
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <net/if.h>
+#include <unistd.h>
+#include <arpa/inet.h>
 
 class Verify
 {
@@ -50,7 +55,8 @@ private:
 };
 
 vector<string>      split(string input, char dlim);
-int                 getConnectedIp(std::string& buf);
+int                 getConnectedIp(std::string& ip);
+bool is_interface_connected(const std::string &interface_name);
 std::string         readFileToString(const std::string& filename) ;
 
 
