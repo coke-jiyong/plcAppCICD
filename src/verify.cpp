@@ -183,84 +183,94 @@ vector<string> split(string input, char dlim)
     return result;
 }
 
-int getConnectedIp(std::string &buf)
+int getConnectedIp(std::string &ip)
 {
-    FILE *pipe = popen("ip -o link show | awk -F': ' '{print $2}' | awk -F'@' '{print $1}'", "r");
-    if (!pipe)
+    int sockfd;
+    struct ifconf ifc;
+    char buf[1024];
+    struct ifreq *ifr;
+    int num_interfaces;
+
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    {
+        perror("socket");
         return -1;
+    }
 
-    char buffer[128];
-    std::string result = "";
+    ifc.ifc_len = sizeof(buf);
+    ifc.ifc_buf = buf;
 
-    while (!feof(pipe))
+    if (ioctl(sockfd, SIOCGIFCONF, &ifc) < 0)
     {
-        if (fgets(buffer, 128, pipe) != NULL)
+        perror("ioctl(SIOCGIFCONF)");
+        close(sockfd);
+        return -1;
+    }
+
+    num_interfaces = ifc.ifc_len / sizeof(struct ifreq);
+    ifr = ifc.ifc_req;
+
+    for (int i = 0; i < num_interfaces; ++i)
+    {
+        std::string iface_name(ifr[i].ifr_name);
+        if (!iface_name.compare("lo"))
         {
-            result += buffer;
+            continue;
+        }
+        if (is_interface_connected(iface_name))
+        {
+            // std::cout << iface_name << std::endl;
+            if (ioctl(sockfd, SIOCGIFADDR, &ifr[i]) < 0)
+            {
+                perror("ioctl(SIOCGIFADDR)");
+                close(sockfd);
+                return -1;
+            }
+
+            struct sockaddr_in *addr = (struct sockaddr_in *)&ifr[i].ifr_addr;
+            ip = inet_ntoa(addr->sin_addr);
+            break;
         }
     }
-    pclose(pipe);
 
-    // Parse the result and process each interface
-    size_t pos = 0;
-    std::string delimiter = "\n";
-    std::string token;
-    while ((pos = result.find(delimiter)) != std::string::npos)
-    {
-        token = result.substr(0, pos);
-        std::string interface = token;
-
-        // Check if the interface is connected
-        std::string check_command = "ethtool " + interface + " 2>/dev/null | grep \"Link detected: yes\"";
-        FILE *check_pipe = popen(check_command.c_str(), "r");
-        if (!check_pipe)
-            return -1;
-
-        char check_buffer[128];
-        bool connected = false;
-        while (!feof(check_pipe))
-        {
-            if (fgets(check_buffer, 128, check_pipe) != NULL)
-            {
-                connected = true;
-                break;
-            }
-        }
-        pclose(check_pipe);
-
-        if (connected)
-        {
-            if (interface != "lo")
-            {
-                // Get the IP address of the interface
-                std::string ip_command = "ip addr show " + interface + " | grep \"inet\\b\" | awk '{print $2}' | cut -d/ -f1";
-                FILE *ip_pipe = popen(ip_command.c_str(), "r");
-                if (!ip_pipe)
-                    return -1;
-
-                char ip_buffer[128];
-                std::string ip_address = "";
-                while (!feof(ip_pipe))
-                {
-                    if (fgets(ip_buffer, 128, ip_pipe) != NULL)
-                    {
-                        ip_address += ip_buffer;
-                    }
-                }
-                pclose(ip_pipe);
-
-                if (!ip_address.empty())
-                {
-                    buf += ip_address;
-                    return 0;
-                }
-            }
-        }
-        // Move to the next interface
-        result.erase(0, pos + delimiter.length());
-    }
-    return 0;
+    close(sockfd);
 }
+
+
+bool is_interface_connected(const std::string &interface_name)
+{
+    int sockfd;
+    struct ifreq ifr;
+
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    {
+        perror("socket");
+        return false;
+    }
+
+    std::memset(&ifr, 0, sizeof(ifr));
+    std::strncpy(ifr.ifr_name, interface_name.c_str(), IFNAMSIZ - 1);
+
+    if (ioctl(sockfd, SIOCGIFFLAGS, &ifr) < 0)
+    {
+        perror("ioctl");
+        close(sockfd);
+        return false;
+    }
+
+    // close(sockfd);
+    // std::cout << "[ " << interface_name << " ]" << std::endl;
+    // std::cout << interface_name << " 활성화: " << std::boolalpha << ((ifr.ifr_flags & IFF_UP) != 0) << std::endl;
+
+    // std::cout << interface_name << " 연결: " << std::boolalpha << ((ifr.ifr_flags & IFF_RUNNING) != 0) << std::endl
+    //           << std::endl;
+    if (((ifr.ifr_flags & IFF_UP) != 0) && ((ifr.ifr_flags & IFF_RUNNING) != 0))
+    {
+        return true;
+    }
+    return false;
+}
+
 
 std::string readFileToString(const std::string &filename)
 {
