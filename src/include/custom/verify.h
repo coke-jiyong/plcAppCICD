@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <net/if.h>
 #include <unistd.h>
+#include <arpa/inet.h>
 
 class Verify
 {

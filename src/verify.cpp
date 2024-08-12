@@ -234,6 +234,7 @@ int getConnectedIp(std::string &ip)
     }
 
     close(sockfd);
+    return 0;
 }
 
 
