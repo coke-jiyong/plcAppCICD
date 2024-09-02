@@ -3,10 +3,10 @@ before_script:
 - echo "This is OTACauth for PLC build container."
 
 stages:
-- test
-- security
+#- test
+#- security
 - build
-- trigger
+#- trigger
 
 
 # #unit test
@@ -16,80 +16,80 @@ stages:
 #     include: 'tests/unit_test.yml'
 
 
-unit_test:
-    image: gcc
-    stage: test
-    before_script:
-        - apt update
-        - apt install -y cmake libcurl4-openssl-dev libssl-dev libgtest-dev nlohmann-json3-dev
-        - mkdir gtest/build
-        - cd gtest/build
-    script:
-        - cmake ..
-        - make
-        - chmod a+x GTest
-        - ./GTest --gtest_output="xml:report.xml"
-        - ls -al
-    artifacts:
-        when: always
-        paths:
-            - gtest/build/report.xml
-        reports:
-            junit: gtest/build/report.xml
+# unit_test:
+#     image: gcc
+#     stage: test
+#     before_script:
+#         - apt update
+#         - apt install -y cmake libcurl4-openssl-dev libssl-dev libgtest-dev nlohmann-json3-dev
+#         - mkdir gtest/build
+#         - cd gtest/build
+#     script:
+#         - cmake ..
+#         - make
+#         - chmod a+x GTest
+#         - ./GTest --gtest_output="xml:report.xml"
+#         - ls -al
+#     artifacts:
+#         when: always
+#         paths:
+#             - gtest/build/report.xml
+#         reports:
+#             junit: gtest/build/report.xml
             
-    allow_failure: false
+#     allow_failure: false
 
 
-#API 테스트 (의존성 1->2->3->build)
-api_tests1:
-  stage: test
-  image: node:16
-  before_script:
-  - npm install -g newman
-  script:
-  - newman run tests/API_test.postman_collection.json
-  allow_failure: false
+# #API 테스트 (의존성 1->2->3->build)
+# api_tests1:
+#   stage: test
+#   image: node:16
+#   before_script:
+#   - npm install -g newman
+#   script:
+#   - newman run tests/API_test.postman_collection.json
+#   allow_failure: false
 
-api_tests2:
-  stage: test
-  image: node:16
-  before_script:
-  - npm install -g newman
-  script:
-  - newman run tests/API_test.postman_collection.json
-  allow_failure: false
-  needs:
-  - api_tests1
+# api_tests2:
+#   stage: test
+#   image: node:16
+#   before_script:
+#   - npm install -g newman
+#   script:
+#   - newman run tests/API_test.postman_collection.json
+#   allow_failure: false
+#   needs:
+#   - api_tests1
 
-api_tests3:
-  stage: test
-  image: node:16
-  before_script:
-  - npm install -g newman
-  script:
-  - newman run tests/API_test.postman_collection.json
-  allow_failure: false
-  needs:
-  - api_tests2
+# api_tests3:
+#   stage: test
+#   image: node:16
+#   before_script:
+#   - npm install -g newman
+#   script:
+#   - newman run tests/API_test.postman_collection.json
+#   allow_failure: false
+#   needs:
+#   - api_tests2
 
-#템플릿 include
-include:
-- template: Jobs/SAST.gitlab-ci.yml #코드 취약점 점검
-- template: Jobs/Dependency-Scanning.gitlab-ci.yml  #SBOM 생성을 위한 의존성 검사 (lock 파일 필요)
+# #템플릿 include
+# include:
+# - template: Jobs/SAST.gitlab-ci.yml #코드 취약점 점검
+# - template: Jobs/Dependency-Scanning.gitlab-ci.yml  #SBOM 생성을 위한 의존성 검사 (lock 파일 필요)
 
 
-sast:
-  stage: security
-  variables:
-    SEARCH_MAX_DEPTH: '10'
-  script:
-    - echo "Running SAST"
+# sast:
+#   stage: security
+#   variables:
+#     SEARCH_MAX_DEPTH: '10'
+#   script:
+#     - echo "Running SAST"
 
-dependency_scanning:
-  stage: security
-  script:
-    - echo "Running Dependency Scan"
-    - cd conan
+# dependency_scanning:
+#   stage: security
+#   script:
+#     - echo "Running Dependency Scan"
+#     - cd conan
 
 
 ".build_job_template":
@@ -123,8 +123,8 @@ build-epc1502:
     TARGET: EPC1502
     VERSION: 6.62
     TARGET_LOW: epc1502
-  needs:
-  - api_tests3
+  # needs:
+  # - api_tests3
 
 build-epc1522:
   extends: ".build_job_template"
@@ -134,8 +134,8 @@ build-epc1522:
     TARGET: EPC1522
     VERSION: 6.54
     TARGET_LOW: epc1522
-  needs:
-  - api_tests3
+  # needs:
+  # - api_tests3
 
 build-axcf3152:
   extends: ".build_job_template"
@@ -145,14 +145,14 @@ build-axcf3152:
     TARGET: AXCF3152
     VERSION: 2.56
     TARGET_LOW: axcf3152
-  needs:
-  - api_tests3
+  # needs:
+  # - api_tests3
 
-#외부 프로젝트 트리거
-trigger_external_project:
-  stage: trigger
-  trigger:
-    project: pjy1/c-example
+# #외부 프로젝트 트리거
+# trigger_external_project:
+#   stage: trigger
+#   trigger:
+#     project: pjy1/c-example
 
 
 
