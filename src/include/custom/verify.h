@@ -6,10 +6,17 @@
 #include "../../jwt/jwt.hpp"
 #include <sys/ioctl.h>
 #include <sys/socket.h>
+<<<<<<< HEAD
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <net/if.h>
 #include <unistd.h>
+=======
+#include <net/if.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+
+>>>>>>> 377ae5902800f3c14b45d3906ad1c300c98cd651
 class Verify
 {
 private:
@@ -51,8 +58,17 @@ private:
     std::vector<string> v;
 };
 
+<<<<<<< HEAD
 vector<string> Split(string input, char dlim);
 int GetConnectedIp(std::string &buf);
 std::string ReadFileToString(const std::string &filename);
 bool is_interface_connected(const std::string &interface_name);
+=======
+vector<string>      split(string input, char dlim);
+int                 getConnectedIp(std::string& ip);
+bool is_interface_connected(const std::string &interface_name);
+std::string         readFileToString(const std::string& filename) ;
+
+
+>>>>>>> 377ae5902800f3c14b45d3906ad1c300c98cd651
 #endif
