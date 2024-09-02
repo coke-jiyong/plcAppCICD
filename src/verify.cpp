@@ -183,11 +183,8 @@ vector<string> Split(string input, char dlim)
     return result;
 }
 
-<<<<<<< HEAD
 int GetConnectedIp(std::string &ip)
-=======
-int getConnectedIp(std::string &ip)
->>>>>>> 377ae5902800f3c14b45d3906ad1c300c98cd651
+
 {
     int sockfd;
     struct ifconf ifc;
@@ -221,7 +218,7 @@ int getConnectedIp(std::string &ip)
         {
             continue;
         }
-        if (is_interface_connected(iface_name))
+        if (IsInterfaceConnected(iface_name))
         {
             // std::cout << iface_name << std::endl;
             if (ioctl(sockfd, SIOCGIFADDR, &ifr[i]) < 0)
@@ -241,11 +238,7 @@ int getConnectedIp(std::string &ip)
     return 0;
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 377ae5902800f3c14b45d3906ad1c300c98cd651
-bool is_interface_connected(const std::string &interface_name)
+bool IsInterfaceConnected(const std::string &interface_name)
 {
     int sockfd;
     struct ifreq ifr;
@@ -279,12 +272,7 @@ bool is_interface_connected(const std::string &interface_name)
     return false;
 }
 
-<<<<<<< HEAD
 std::string ReadFileToString(const std::string &filename)
-=======
-
-std::string readFileToString(const std::string &filename)
->>>>>>> 377ae5902800f3c14b45d3906ad1c300c98cd651
 {
     std::ifstream file(filename);
     if (!file.is_open())
