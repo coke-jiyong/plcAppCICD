@@ -4,54 +4,55 @@
 #include "json.h"
 #include "curl.h"
 #include "../../jwt/jwt.hpp"
-
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <net/if.h>
+#include <unistd.h>
 class Verify
 {
-    private:
-        Json::Value         ver_json;
-        CURL_Handler        curl_handle;
-        Json::StyledWriter  writer;
-        string              JsonStr;
-        string              response;
-        Json::Value         root;
+private:
+    Json::Value ver_json;
+    CURL_Handler curl_handle;
+    Json::StyledWriter writer;
+    string json_str;
+    string response;
+    Json::Value root;
 
-    public:
-        Verify(const char * _otac);
-        Verify();
-        bool                Set_Host_IP();
-        void                Set_Post(const char* url);
-        void                Request();
-        Json::Value         Get_Root();
-        std::string         Get_Response();
-        Json::String        Get_Data();
-        const char *        Get_Ip();
-        
+public:
+    Verify(const char *_otac);
+    Verify();
+    bool SetHostIp();
+    void SetPost(const char *url);
+    void Request();
+    Json::Value GetRoot();
+    std::string GetResponse();
+    Json::String GetData();
+    const char *GetIp();
 };
 
-
 using namespace jwt::params;
-class checkLicense {
+class CheckLicense
+{
 public:
-    checkLicense(const std::string _pub_key_path ,const std::string _token_path)
-    : pub_key_path(_pub_key_path), token_path(_token_path) 
+    CheckLicense(const std::string _pub_key_path, const std::string _token_path)
+        : pub_key_path(_pub_key_path), token_path(_token_path)
     {
-
     }
-    void init();
-    bool validateHostId(char * serial);
-    
+    void Init();
+    bool ValidateHostId(char *serial);
 
 private:
-    jwt::jwt_object     dec_obj;
-    const std::string   pub_key_path;
-    const std::string   token_path;
-    string              payload;
+    jwt::jwt_object dec_obj;
+    const std::string pub_key_path;
+    const std::string token_path;
+    string payload;
     std::vector<string> v;
 };
 
-vector<string>      split(string input, char dlim);
-int                 getConnectedIp(std::string& buf);
-std::string         readFileToString(const std::string& filename) ;
-
-
+vector<string> Split(string input, char dlim);
+int GetConnectedIp(std::string &buf);
+std::string ReadFileToString(const std::string &filename);
+bool is_interface_connected(const std::string &interface_name);
 #endif

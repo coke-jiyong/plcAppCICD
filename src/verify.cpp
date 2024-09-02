@@ -15,10 +15,10 @@ Verify::Verify()
     return;
 }
 
-bool Verify::Set_Host_IP()
+bool Verify::SetHostIp()
 {
     std::string buf = "";
-    int result = getConnectedIp(buf);
+    int result = GetConnectedIp(buf);
 
     if (result == -1)
     {
@@ -34,15 +34,15 @@ bool Verify::Set_Host_IP()
     return true;
 }
 
-void Verify::Set_Post(const char *url)
+void Verify::SetPost(const char *url)
 {
     if (!curl_handle.init())
     {
         return;
     }
     curl_handle.set_header_content("Content-Type", "application/json");
-    JsonStr = writer.write(ver_json);
-    curl_handle.set_post(JsonStr);
+    json_str = writer.write(ver_json);
+    curl_handle.set_post(json_str);
     curl_handle.set_server_info(url);
 }
 
@@ -57,15 +57,15 @@ void Verify::Request()
     reader.parse(response, root);
 }
 
-Json::Value Verify::Get_Root() { return root; }
+Json::Value Verify::GetRoot() { return root; }
 
-std::string Verify::Get_Response() { return response; }
+std::string Verify::GetResponse() { return response; }
 
-const char *Verify::Get_Ip() { return ver_json["plcDeviceId"].asCString(); }
+const char *Verify::GetIp() { return ver_json["plcDeviceId"].asCString(); }
 
-Json::String Verify::Get_Data() { return ver_json.toStyledString(); }
+Json::String Verify::GetData() { return ver_json.toStyledString(); }
 
-bool checkLicense::validateHostId(char *serial)
+bool CheckLicense::ValidateHostId(char *serial)
 {
     if (dec_obj.has_claim("hostId"))
     {
@@ -73,7 +73,7 @@ bool checkLicense::validateHostId(char *serial)
         this->payload = this->dec_obj.payload().get_claim_value<std::string>("hostId"); // payload serialNumber
         if (payload.find('|') != string::npos)
         {
-            this->v = split(this->payload, '|');
+            this->v = Split(this->payload, '|');
             for (int i = 0; i < this->v.size(); i++)
             {
                 if (!this->v[i].compare(serial))
@@ -92,10 +92,10 @@ bool checkLicense::validateHostId(char *serial)
     throw std::runtime_error("The 'hostId' does not exist in the payload.");
 }
 
-void checkLicense::init()
+void CheckLicense::Init()
 {
-    std::string pub_key = readFileToString(this->pub_key_path);
-    std::string token = readFileToString(this->token_path);
+    std::string pub_key = ReadFileToString(this->pub_key_path);
+    std::string token = ReadFileToString(this->token_path);
 
     if (token == "")
     {
@@ -168,7 +168,7 @@ void checkLicense::init()
     }
 }
 
-vector<string> split(string input, char dlim)
+vector<string> Split(string input, char dlim)
 {
     vector<string> result;
     stringstream ss;
@@ -183,88 +183,95 @@ vector<string> split(string input, char dlim)
     return result;
 }
 
-int getConnectedIp(std::string &buf)
+int GetConnectedIp(std::string &ip)
 {
+    int sockfd;
+    struct ifconf ifc;
+    char buf[1024];
+    struct ifreq *ifr;
+    int num_interfaces;
 
-    std::string command = "ip -o link show | awk -F': ' '{print $2}' | awk -F'@' '{print $1}'";
-    FILE *pipe = popen(command.c_str(), "r");
-    if (!pipe)
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    {
+        perror("socket");
         return -1;
+    }
 
-    char buffer[128];
-    std::string result = "";
+    ifc.ifc_len = sizeof(buf);
+    ifc.ifc_buf = buf;
 
-    while (!feof(pipe))
+    if (ioctl(sockfd, SIOCGIFCONF, &ifc) < 0)
     {
-        if (fgets(buffer, 128, pipe) != NULL)
+        perror("ioctl(SIOCGIFCONF)");
+        close(sockfd);
+        return -1;
+    }
+
+    num_interfaces = ifc.ifc_len / sizeof(struct ifreq);
+    ifr = ifc.ifc_req;
+
+    for (int i = 0; i < num_interfaces; ++i)
+    {
+        std::string iface_name(ifr[i].ifr_name);
+        if (!iface_name.compare("lo"))
         {
-            result += buffer;
+            continue;
+        }
+        if (is_interface_connected(iface_name))
+        {
+            // std::cout << iface_name << std::endl;
+            if (ioctl(sockfd, SIOCGIFADDR, &ifr[i]) < 0)
+            {
+                perror("ioctl(SIOCGIFADDR)");
+                close(sockfd);
+                return -1;
+            }
+
+            struct sockaddr_in *addr = (struct sockaddr_in *)&ifr[i].ifr_addr;
+            ip = inet_ntoa(addr->sin_addr);
+            break;
         }
     }
-    pclose(pipe);
 
-    // Parse the result and process each interface
-    size_t pos = 0;
-    std::string delimiter = "\n";
-    std::string token;
-    while ((pos = result.find(delimiter)) != std::string::npos)
-    {
-        token = result.substr(0, pos);
-        std::string interface = token;
-
-        // Check if the interface is connected
-        std::string check_command = "ethtool " + interface + " 2>/dev/null | grep \"Link detected: yes\"";
-        FILE *check_pipe = popen(check_command.c_str(), "r");
-        if (!check_pipe)
-            return -1;
-
-        char check_buffer[128];
-        bool connected = false;
-        while (!feof(check_pipe))
-        {
-            if (fgets(check_buffer, 128, check_pipe) != NULL)
-            {
-                connected = true;
-                break;
-            }
-        }
-        pclose(check_pipe);
-
-        if (connected)
-        {
-            if (interface != "lo")
-            {
-                // Get the IP address of the interface
-                std::string ip_command = "ip addr show " + interface + " | grep \"inet\\b\" | awk '{print $2}' | cut -d/ -f1";
-                FILE *ip_pipe = popen(ip_command.c_str(), "r");
-                if (!ip_pipe)
-                    return -1;
-
-                char ip_buffer[128];
-                std::string ip_address = "";
-                while (!feof(ip_pipe))
-                {
-                    if (fgets(ip_buffer, 128, ip_pipe) != NULL)
-                    {
-                        ip_address += ip_buffer;
-                    }
-                }
-                pclose(ip_pipe);
-
-                if (!ip_address.empty())
-                {
-                    buf += ip_address;
-                    return 0;
-                }
-            }
-        }
-        // Move to the next interface
-        result.erase(0, pos + delimiter.length());
-    }
+    close(sockfd);
     return 0;
 }
 
-std::string readFileToString(const std::string &filename)
+bool is_interface_connected(const std::string &interface_name)
+{
+    int sockfd;
+    struct ifreq ifr;
+
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    {
+        perror("socket");
+        return false;
+    }
+
+    std::memset(&ifr, 0, sizeof(ifr));
+    std::strncpy(ifr.ifr_name, interface_name.c_str(), IFNAMSIZ - 1);
+
+    if (ioctl(sockfd, SIOCGIFFLAGS, &ifr) < 0)
+    {
+        perror("ioctl");
+        close(sockfd);
+        return false;
+    }
+
+    // close(sockfd);
+    // std::cout << "[ " << interface_name << " ]" << std::endl;
+    // std::cout << interface_name << " 활성화: " << std::boolalpha << ((ifr.ifr_flags & IFF_UP) != 0) << std::endl;
+
+    // std::cout << interface_name << " 연결: " << std::boolalpha << ((ifr.ifr_flags & IFF_RUNNING) != 0) << std::endl
+    //           << std::endl;
+    if (((ifr.ifr_flags & IFF_UP) != 0) && ((ifr.ifr_flags & IFF_RUNNING) != 0))
+    {
+        return true;
+    }
+    return false;
+}
+
+std::string ReadFileToString(const std::string &filename)
 {
     std::ifstream file(filename);
     if (!file.is_open())

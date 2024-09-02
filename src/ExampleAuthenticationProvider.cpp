@@ -50,12 +50,12 @@ namespace Arp
                 }
 
                 char *serialNumber = result.SubjectSerialNumber.CStr();
-                checkLicense handle(pub_key_path, token_path);
+                CheckLicense handle(pub_key_path, token_path);
 
                 try
                 {
-                    handle.init();
-                    handle.validateHostId(serialNumber);
+                    handle.Init();
+                    handle.ValidateHostId(serialNumber);
                 }
                 catch (std::runtime_error &e)
                 {
@@ -99,23 +99,23 @@ namespace Arp
                 log.Debug("OTACAuthenticationProvider: License check success.");
                 const UserConfTag &userconf = mod.GetConfig()->userConf;
                 Verify handler(password.CStr());
-                if (!handler.Set_Host_IP())
+                if (!handler.SetHostIp())
                 {
-                    log.Debug("OTACAuthenticationProvider: Set_Host_IP failed.");
+                    log.Debug("OTACAuthenticationProvider: SetHostIp failed.");
                     return UmAuthenticationResult::Failed;
                 }
-                handler.Set_Post(userconf.url.CStr());
+                handler.SetPost(userconf.url.CStr());
                 handler.Request();
-                Json::Value root = handler.Get_Root();
+                Json::Value root = handler.GetRoot();
 
-                log.Debug("OTACAuthenticationProvider: Host Address : {0}", handler.Get_Ip());
+                log.Debug("OTACAuthenticationProvider: Host Address : {0}", handler.GetIp());
                 log.Debug("OTACAuthenticationProvider: Server Address : {0}", userconf.url.CStr());
-                log.Debug("OTACAuthenticationProvider: {0}", handler.Get_Response());
+                log.Debug("OTACAuthenticationProvider: {0}", handler.GetResponse());
 
-                return result_check(root, username, sessionInfo);
+                return ResultCheck(root, username, sessionInfo);
             }
 
-            UmAuthenticationResult ExampleAuthenticationProvider::result_check(Json::Value Root, const String &inputUser, SessionInfo &sessionInfo)
+            UmAuthenticationResult ExampleAuthenticationProvider::ResultCheck(Json::Value Root, const String &inputUser, SessionInfo &sessionInfo)
             {
                 const char *username = inputUser.CStr();
                 if (Root["userId"] == username)
@@ -126,7 +126,7 @@ namespace Arp
                         String Roles(Root["userRoles"].asCString());
                         if (Roles.Find('|') != -1)
                         {
-                            vector<string> result = split(Roles, '|');
+                            vector<string> result = Split(Roles, '|');
 
                             for (int i = 0; i < result.size(); i++)
                             {
